@@ -1,5 +1,12 @@
 # Installer un serveur zabbix
 
+### Utils
+
+La commande ifconfig ne fonctionne pas utilisez
+```
+ip addr show
+```
+
 ### Prérequis
 
 Toutes les commandes suivantes requière un access administrateur
@@ -191,7 +198,7 @@ Une fois finis relancer l'agent
 yum install zabbix22-agent
 ```
 
-### Configuration de l'agent
+#### Configuration de l'agent
 
 On configure l'agent en indiquant l'IP du serveur Zabbix et on désactive le "Server Active"
 ```
@@ -199,10 +206,37 @@ sed -i 's/^Server=127.0.0.1/Server=<ADDRESS IP DU SERVEUR ZABBIX>/g' /etc/zabbix
 sed -i 's/^ServerActive=127.0.0.1/ServerActive=/g' /etc/zabbix/zabbix_agentd.conf
 ```
 
-### Activation des services
+#### Activation des services
 
 On active au démarrage le service de l'Agent Zabbix puis on le démarre :
 ```
 systemctl enable zabbix-agent
 systemctl start zabbix-agent
 ```
+
+#### Se rendre sur le dashboard
+
+Pour se rendre sur le dashboard allez a l'addresse
+```
+http://<ip_du_server>/zabbix
+```
+
+Vous devriez vous retrouver devant l'installation graphique de zabbix.
+Pour se connecter vous devez utiliser l'username admin et le password zabbix
+
+
+### Il faut penser a ouvrir les ports sur le firewall
+
+Commande pour trouver les bon ports
+
+ps -aux | grep zabbix
+
+
+# Sur le server zabbix
+
+Lorceque vous etes sur le dashboard et que vous voulez configurer un trigger.
+Item: Rendrez vous dans configuration/hosts/<votre host>/item/create item vous devez alors le configurer pour installer un tracking de port il vous faut, remplire les informations utilisez le bouton select pour le champ key et allez chercher la ligne net.tcp.service.
+Configurer ensuite la ligne de la sorte net.tcp.service[tcp,<ip>,<port>]
+
+Trigger: Rendez vous dans configuration/hosts/<votre host>/trigger/create trigger Remplisez les informations pour Expression choisisez l'item que vous avez cree precedament. Faites attention car la condition de trigger se trouve a la fin de la ligne. Lorceque vous avez remplis la ligne. Une fois que vous avez entrez une ligne dans le champ expression vous pouvez la tester avec le champ test.
+
